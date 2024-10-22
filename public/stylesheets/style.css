@@ -1,0 +1,168 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+#main {
+  display: flex;
+  flex-direction: column; /* Change to column for mobile responsiveness */
+  height: 100%;
+  width: 100%;
+  align-items: center; /* Center align items */
+}
+
+#msg {
+  padding: 10px;
+  flex-grow: 1; /* Allow this to grow and take available space */
+  width: 90%;
+  margin: 10px;
+  pointer-events: none;
+  background-color: aqua;
+
+  position: relative;
+  overflow-y: auto; /* Enable scrolling */
+}
+
+textarea {
+  font-size: 20px;
+  font-weight: 200;
+  font-family: gilroy;
+  width: 85%; /* Adjust width */
+}
+
+#textarea {
+  height: 10%;
+  position: absolute;
+  resize: none !important;
+  width: 85%;
+  font-family: gilroy;
+  font-weight: 200;
+  bottom: 5%; /* Adjust positioning */
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+#one {
+  height: 50px; /* Set a fixed height for the button */
+  width: 30%; /* Adjust width */
+  background-color: red;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px; /* Add margin */
+}
+
+#tooth {
+  height: 20%;
+  width: 30%;
+  z-index: 99;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#int {
+  outline: none;
+  border: 1px solid #dadada;
+  height: 50px; /* Set a fixed height */
+  width: 100%; /* Full width */
+  font-size: 20px;
+}
+
+#but {
+  height: 40px; /* Set a fixed height */
+  width: 100%; /* Full width */
+  font-size: 20px;
+  background: orange;
+  color: red;
+  cursor: pointer;
+  margin-top: 10px; /* Add margin */
+}
+
+#top {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  display: flex; /* Use flex for alignment */
+  gap: 10px;
+  opacity: .7;
+}
+
+#username {
+  font-size: 20px;
+  font-family: gilroy;
+  font-weight: 100;
+  margin: 1.5px;
+}
+
+.onlineuser {
+  position: absolute;
+  top: 5%;
+  right: 15%;
+  display: flex;
+  z-index: 999;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Dialogue styles */
+.dialogue {
+  display: none;
+  width: 180px;
+  height: fit-content;
+  max-height: 200px;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+
+.dialogue.active {
+  display: block;
+}
+
+.dialogue-user {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  color: #333;
+}
+
+.dialogue-user:last-child {
+  border-bottom: none;
+}
+
+/* Hide the userList as we're using dialogue instead */
+#userList {
+  display: none;
+}
+
+/* Media Query for Mobile Screens */
+@media (max-width: 480px) {
+  #msg {
+    background-color: #000; /* Change background color for mobile */
+  }
+
+  #textarea {
+    height: 15%; /* Adjust textarea height for mobile */
+  }
+
+  #one {
+    width: 80%; /* Adjust button width for mobile */
+  }
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <style>
+        /* Keep your existing styles and add/modify these */
+        .dialogue {
+            display: none;
+            width: 180px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            border-radius: 8px;
+            z-index: 1000;
+            padding: 10px;
+        }
+
+        .dialogue.show {
+            display: block !important;
+        }
+
+        .user-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .onlineuser {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div id="tooth">
+        <input id="int" type="text" placeholder="Enter your name">
+        <button id="but">save</button>
+    </div>
+
+    <div id="main">
+            <div id="top">
+            <div id="user">
+                <i class="ri-user-line"></i>
+            </div>
+            <h3 id="username">username</h3>
+        </div>
+        <div class="onlineuser">
+            <h3>Users Online (<span id="onlinenumber">0</span>)</h3>
+            <svg width="15" height="15">
+                <circle cx="7.5" cy="7.5" r="7.5" fill="black"/>
+            </svg>
+            <i class="ri-arrow-down-s-fill"></i>
+            <div class="dialogue"></div>
+        </div>
+        <div id="msg">
+            <div class="msg">hi</div>
+        </div>
+        <div id="textarea">
+            <textarea placeholder="type your message" rows="2" cols="192"></textarea>
+        </div>
+        <button id="one">send</button>
+    
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+    <script>
+        // Connect to Socket.IO server
+        const socket = io();
+        let username;
+        let isDialogueOpen = false;
+
+        // DOM elements
+        const dialogue = document.querySelector(".dialogue");
+        const onlineUserSection = document.querySelector(".onlineuser");
+        const textarea = document.querySelector("textarea");
+        const usernameInput = document.querySelector("input");
+        const saveButton = document.querySelector("#but");
+        const sendButton = document.querySelector("#one");
+
+        // Toggle dialogue
+        onlineUserSection.addEventListener("click", (e) => {
+            console.log('Clicked online users section');
+            isDialogueOpen = !isDialogueOpen;
+            dialogue.classList.toggle("show");
+            e.stopPropagation();
+        });
+
+        // Close dialogue when clicking outside
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest('.dialogue') && !e.target.closest('.onlineuser')) {
+                dialogue.classList.remove("show");
+                isDialogueOpen = false;
+            }
+        });
+
+        // Handle user count updates
+        socket.on("onlineCount", (count) => {
+            console.log('Online count updated:', count);
+            document.querySelector("#onlinenumber").textContent = count;
+        });
+
+        // Handle online users updates
+        socket.on("onlineUsers", (users) => {
+            console.log('Online users updated:', users);
+            dialogue.innerHTML = ""; // Clear current list
+
+            if (users.length === 0) {
+                const div = document.createElement("div");
+                div.className = "user-item";
+                div.textContent = "No users online";
+                dialogue.appendChild(div);
+                return;
+            }
+
+            users.forEach((user) => {
+                const div = document.createElement("div");
+                div.className = "user-item";
+                div.textContent = user;
+                if (user === username) {
+                    div.style.fontWeight = "bold";
+                    div.style.color = "#2196F3";
+                }
+                dialogue.appendChild(div);
+            });
+        });
+
+        // Handle sending messages
+        sendButton.addEventListener("click", () => {
+            const messageText = textarea.value.trim();
+            if (messageText && username) {
+                socket.emit("msg", { username, msgvalue: messageText });
+                textarea.value = "";
+            }
+        });
+
+        // Handle receiving messages
+        socket.on("msg", (data) => {
+            const div = document.createElement("div");
+            div.classList.add("msg");
+            div.textContent = `${data.username}: ${data.msgvalue}`;
+            document.querySelector("#msg").appendChild(div);
+            const msgContainer = document.querySelector("#msg");
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        });
+
+        // Handle username setting
+        saveButton.addEventListener("click", () => {
+            const newUsername = usernameInput.value.trim();
+            if (newUsername.length > 3) {
+                username = newUsername;
+                document.querySelector("#username").textContent = username;
+                document.querySelector("#top").style.display = "flex";
+                document.querySelector("#tooth").style.display = "none";
+                socket.emit("setUsername", username);
+                console.log('Username set:', username);
+            }
+        });
+
+        // Enter key to send message
+        textarea.addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendButton.click();
+            }
+        });
+
+        textarea.style.resize = "none";
+    </script>
+</body>
+</html>
