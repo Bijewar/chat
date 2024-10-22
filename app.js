@@ -1,4 +1,3 @@
-// app.js
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -11,15 +10,8 @@ const io = socketIo(server);
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Set view engine
-app.set('view engine', 'ejs');
-
 // Store connected users
 const connectedUsers = new Map();
-
-app.get('/', (req, res) => {
-    res.render('index');
-});
 
 io.on('connection', (socket) => {
     console.log('A user connected');
@@ -50,4 +42,7 @@ io.on('connection', (socket) => {
     });
 });
 
-module.exports = { app, server };  // Export app and server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

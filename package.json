@@ -1,10 +1,10 @@
 {
-  "name": "your-app-name",
+  "name": "chat-app",
   "version": "1.0.0",
-  "description": "Your Node.js chat app",
-  "main": "app.js",  
+  "description": "Node.js chat app with Socket.IO",
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js",  
+    "start": "node app.js",
     "dev": "nodemon app.js"
   },
   "dependencies": {

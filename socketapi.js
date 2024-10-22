@@ -1,37 +1,20 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+// Connect to the Socket.IO server
+const socket = io();
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+// Set username on connection
+socket.emit('setUsername', 'YourUsername');
 
-let onlineUsers = {}; // Object to store online users
-
-io.on('connection', (socket) => {
-    console.log('A user connected');
-
-    // Handle setting username
-    socket.on('setUsername', (username) => {
-        onlineUsers[socket.id] = username;
-        io.emit('onlineUsers', Object.values(onlineUsers)); // Emit updated list of online users
-        io.emit('onlineCount', Object.keys(onlineUsers).length); // Emit online user count
-    });
-
-    // Handle message
-    socket.on('msg', (data) => {
-        io.emit('msg', data); // Broadcast message to all clients
-    });
-
-    // Handle disconnect
-    socket.on('disconnect', () => {
-        delete onlineUsers[socket.id]; // Remove user on disconnect
-        io.emit('onlineUsers', Object.values(onlineUsers)); // Emit updated list of online users
-        io.emit('onlineCount', Object.keys(onlineUsers).length); // Emit online user count
-        console.log('A user disconnected');
-    });
+// Receive messages from server
+socket.on('msg', function(data) {
+    console.log('Message from server:', data);
 });
 
-server.listen(3000, () => {
-    console.log('Listening on port 3000');
+// Update online users count
+socket.on('onlineCount', function(count) {
+    console.log('Online users count:', count);
+});
+
+// Update online users list
+socket.on('onlineUsers', function(users) {
+    console.log('Online users:', users);
 });
